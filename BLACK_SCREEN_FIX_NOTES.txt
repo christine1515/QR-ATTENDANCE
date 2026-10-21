@@ -1,0 +1,34 @@
+QR-ATT — Black-screen fix and build checklist
+
+WHAT WAS CHECKED
+- Added defensive handling for missing Supabase EAS variables so module import no longer throws before the app can render; login shows a configuration warning instead.
+- Fixed the app root layout to show a visible loading indicator while authentication initializes (existing fix retained).
+- Added Supabase auth initialization timeout handling (existing fix retained).
+- Fixed TypeScript project checking so Supabase Edge Function code (which uses Deno types) is not incorrectly typechecked as React Native app code.
+- Added explicit EAS environment selection for preview and production builds.
+- Verified `npx tsc --noEmit` successfully.
+- Verified `npx expo export --platform android` successfully (Android JavaScript bundle exported).
+
+IMPORTANT LIMITATION
+This is a cleaned source ZIP, not a prebuilt or physically tested APK. I cannot guarantee the phone issue is fully fixed until a new APK is built with your actual Supabase environment and tested on the device. The cloud build cannot be completed from this ZIP alone because EAS login/project credentials and your remote environment configuration are user-specific.
+
+BEFORE BUILDING
+1. Keep your existing .env file private. Do not upload it publicly.
+2. In Expo dashboard, open the project matching this app's EAS project ID.
+3. Add these variables to the Preview environment:
+   EXPO_PUBLIC_SUPABASE_URL
+   EXPO_PUBLIC_SUPABASE_ANON_KEY
+   Use the values from your own .env file. Never use a service-role key in the app.
+4. Run `npm ci`.
+5. Run `npm run typecheck`.
+6. Run `npx expo-doctor`.
+7. Build the APK: `npx eas-cli build --platform android --profile preview`
+8. Download the APK from the EAS build page and test login, navigation, camera permission, QR scan, and attendance.
+
+If build succeeds but app is still black:
+- Connect the phone with USB debugging and collect logs using `adb logcat`.
+- Check that both EAS environment variables are defined for the selected build environment.
+- Do not paste any secret keys into public chats or repositories.
+
+BACKEND REQUIREMENTS
+The delete-user action requires the Supabase Edge Function described in FINAL_SETUP.md to be deployed to your own Supabase project. Database RLS policies and real backend permissions cannot be verified without access to your live Supabase project.
