@@ -24,7 +24,7 @@ export default function RootLayout() {
 
     const timeout = setTimeout(() => {
       setLoadingTimedOut(true);
-    }, 5000);
+    }, 2000);
 
     return () => clearTimeout(timeout);
   }, [loading]);
